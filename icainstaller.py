@@ -1,29 +1,25 @@
 #!/usr/bin/env python
-"""I have no idea what I'm going to do with this"""
 import os
 import sys
 import subprocess
 import getpass
 
-#Exception Class to make sure this is run with sudo privleges
 
 #Global Variables
-
 password = getpass.getpass(prompt="Input your Sudo Password: " )
 
-#Shell CMDS
+#Shell CMDS Variables
 tmpdir = '[ ! -d /opt/ica ] && sudo mkdir -p /opt/ica'
 space = "df -k"
 kernel = "uname -r | grep -oP '(\d)\.\d+'"
 distrocmd = "cat /etc/*-release | grep -oP '(^NAME=(Fedora))' | grep -oP '(Fedora)$'"
 fusioncmd = 'sudo yum localinstall --nogpgcheck http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm'
-rpminstallcmd = "sudo wget -O /opt/ica/linuxxica-13.1.tar.gz https://googledrive.com/host/0B_RKYajewrzSd0ZxNVFvY1pZNVU && sudo tar -xvzf /opt/ica/linuxxica-13.1.tar.gz && sudo /opt/ica/setupwfc"
-copypemexportcmd = "sudo wget https://certs.godaddy.com/repository/gd-class2-root.crt; sudo cp ./gd-class2-root.crt /opt/Citrix/ICAClient/keystore/cacerts/"
+rpminstallcmd = "sudo wget -O /opt/ica/linuxxica-13.1.tar.gz https://googledrive.com/host/0B_RKYajewrzSd0ZxNVFvY1pZNVU && cd /opt/ica && sudo tar -xvzf /opt/ica/linuxxica-13.1.tar.gz && sudo /opt/ica/setupwfc"
+copypemexportcmd = "cd /opt/Citrix/ICAClient/keystore/cacerts && sudo wget https://certs.godaddy.com/repository/gd-class2-root.crt "
 
-#Global Functions.
+#Global Functions
 
 #Get the main version of the kernel and return it to a variable.
-
 def GetKernel():
 	kernel_value = float(subprocess.check_output(kernel, shell=True))
 	if kernel_value < 2.6 :
@@ -41,7 +37,6 @@ def GetDistro():
 	return (distro_value)
 
 #Runs a long yum local install to grab the latest Fusion repository for Fedora
-
 def GetFusion():
 	yumfusion = subprocess.check_output(fusioncmd, shell=True)
 
@@ -66,8 +61,6 @@ def InstallYumPkgs():
 
 	subprocess.call("sudo yum -y install yum install libgtk-x11-2.0.so.0 libgdk-x11-2.0.so.0 libatk-1.0.so.0 libgdk_pixbuf-2.0.so.0", shell= True)
 
-#Need to install version 12.1 from some webserver somewhere force install if dependencies are not met.
-
 def TmpDirCreate():
 
     subprocess.call(tmpdir, shell=True)
@@ -79,7 +72,7 @@ def RpmInstall():
 def InstallCert():
 
 	subprocess.call(copypemexportcmd, shell=True)
-	
+
 
 def main():
 
@@ -99,8 +92,7 @@ def main():
         print("Distro Not Recognized.")
         sys.exit()
 
-    '''Check some basic system requirements for the system. Not sure if this is needed anymore for ICA 13.1 so I'm commenting it out.'''
-    print("Checking if Fusion Repository is added, if not let's add it\n")
+    print("\nChecking if Fusion Repository is added, if not let's add it\n")
 
     GetFusion()
 
@@ -123,14 +115,11 @@ def main():
 
     RpmInstall()
 
-#install the security certificates from the Mozilla directory.
+#Install the security certificates from the Mozilla directory.
 
-    #InstallCert()
+    InstallCert()
 
-#Print Out a message.
-
-    '''print("Cool, Citrix Receiver should be installed on your system.\n")
-    print("\n Just tell Firefox to always open the .ica files with /opt/Citrix/ICAClient/wfica.bin")'''
+    print("Cool, Citrix Receiver should be installed on your system.\n")
 
 
 if __name__ == '__main__':
