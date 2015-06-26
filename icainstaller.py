@@ -23,7 +23,7 @@ copypemexportcmd = "cd /opt/Citrix/ICAClient/keystore/cacerts && sudo wget https
 def GetKernel():
 	kernel_value = float(subprocess.check_output(kernel, shell=True))
 	if kernel_value < 2.6 :
-		print("Your kernel is not new enough. Requires Kernel 2.6.29 or higher to proceed\n")
+		print("Your kernel is not new enough. Requires Kernel 2.6.29 or higher to run the ICA client\n")
 		sys.exit()
 	else:
 		print ("Your kernel is new enough. Go you. Moving on\n")
@@ -37,8 +37,8 @@ def GetDistro():
 	return (distro_value)
 
 #Runs a long yum local install to grab the latest Fusion repository for Fedora
-def GetFusion():
-	yumfusion = subprocess.check_output(fusioncmd, shell=True)
+def InstallFusion():
+	subprocess.check_output(fusioncmd, shell=True)
 
 
 #Using an "or" operator causes any other input to be allowed past the loop. Not sure why. 
@@ -94,12 +94,9 @@ def main():
 
     print("\nChecking if Fusion Repository is added, if not let's add it\n")
 
-    GetFusion()
+    InstallFusion()
 
-	
-# Prompt user if they want to update and install all the necessary libraries and warn
-#them if they skip this option the receiver client might have issues.
-
+# Prompt user if they want to update and install all the necessary libraries.
     answer1 = InstallPrompt1()
 
     if answer1 == 'Y':
@@ -108,19 +105,15 @@ def main():
         print("\nSkipped\n")
         pass
 
-# Check and Create Tmp Directory For ICA Installer Download
     TmpDirCreate()
 
-#Download and run the setup for the Citrix setup.
-
+# Download and run the Citrix ICA installer.
     RpmInstall()
 
-#Install the security certificates from the Mozilla directory.
-
+#Install the GoDaddy security certificates from the Mozilla directory.
     InstallCert()
 
     print("Cool, Citrix Receiver should be installed on your system.\n")
-
 
 if __name__ == '__main__':
     sys.exit(main())
