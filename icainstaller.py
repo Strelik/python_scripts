@@ -110,7 +110,7 @@ def main():
 # Download and run the Citrix ICA installer.
     RpmInstall()
 
-#Install the GoDaddy security certificates from the Mozilla directory.
+#Install the GoDaddy security certificate from the web.
     InstallCert()
 
     print("Cool, Citrix Receiver should be installed on your system.\n")
