@@ -29,7 +29,7 @@ def GetKernel():
 		print ("Your kernel is new enough. Go you. Moving on\n")
 
 
-# Performs a similar command above to get your distribution name. 
+# Get your distribution name.
 def GetDistro():
 
 	distro_value = str(subprocess.check_output(distrocmd, shell=True))
