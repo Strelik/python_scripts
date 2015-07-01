@@ -19,7 +19,7 @@ copypemexportcmd = "cd /opt/Citrix/ICAClient/keystore/cacerts && sudo wget https
 
 #Global Functions
 
-#Get the main version of the kernel and return it to a variable.
+#ICA Client requires a kernel newer then 2.6.29 to run which is why this is checked for.
 def GetKernel():
 	kernel_value = float(subprocess.check_output(kernel, shell=True))
 	if kernel_value < 2.6 :
@@ -29,7 +29,7 @@ def GetKernel():
 		print ("Your kernel is new enough. Go you. Moving on\n")
 
 
-# Get your distribution name.
+# Get your distribution name and ensure it's Fedora.
 def GetDistro():
 
 	distro_value = str(subprocess.check_output(distrocmd, shell=True))
@@ -59,13 +59,13 @@ def InstallPrompt1():
 
 def InstallYumPkgs():
 
-	subprocess.call("sudo yum -y install yum install libgtk-x11-2.0.so.0 libgdk-x11-2.0.so.0 libatk-1.0.so.0 libgdk_pixbuf-2.0.so.0", shell= True)
+	subprocess.call("sudo yum -y install libgtk-x11-2.0.so.0 libgdk-x11-2.0.so.0 libatk-1.0.so.0 libgdk_pixbuf-2.0.so.0", shell= True)
 
-def TmpDirCreate():
+def TmpDirCreate(): #Create temporary working directory to download ICAClient.
 
     subprocess.call(tmpdir, shell=True)
 
-def RpmInstall():
+def ICAInstall():
 
 	subprocess.call(rpminstallcmd, shell=True)
 
@@ -76,18 +76,12 @@ def InstallCert():
 
 def main():
 
-# Check kernel requirements
-
     GetKernel()
 
-#Check if it's a Fedora or ubuntu system
     distro_value = GetDistro()
 
     if "Fedora" in distro_value:
         print("Proceeding with a Fedora installation of ICA Client")
-
-    elif "Ubuntu" in distro_value:
-        print("Proceeding with an Ubuntu installation of ICA Client")
     else:
         print("Distro Not Recognized.")
         sys.exit()
@@ -96,7 +90,6 @@ def main():
 
     InstallFusion()
 
-# Prompt user if they want to update and install all the necessary libraries.
     answer1 = InstallPrompt1()
 
     if answer1 == 'Y':
@@ -107,13 +100,12 @@ def main():
 
     TmpDirCreate()
 
-# Download and run the Citrix ICA installer.
-    RpmInstall()
+    ICAInstall()
 
-#Install the GoDaddy security certificate from the web.
+#Install the GoDaddy security certificate from the web so the ICA client can trust the connection..
     InstallCert()
 
-    print("Cool, Citrix Receiver should be installed on your system.\n")
+    print("Cool, Citrix Receiver should be installed and working on your system.\n")
 
 if __name__ == '__main__':
     sys.exit(main())
